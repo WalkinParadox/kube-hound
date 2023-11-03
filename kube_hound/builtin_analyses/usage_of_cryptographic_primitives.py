@@ -95,10 +95,10 @@ class UsageOfCryptographicPrimitives(StaticAnalysis):
             sonarscanner_container.remove()
 
             # Stop the container
-            sonarqube_container.stop()
+            #sonarqube_container.stop()
 
             # Remove the container
-            sonarqube_container.remove()
+            #sonarqube_container.remove()
 
         return []
 
@@ -188,6 +188,7 @@ class UsageOfCryptographicPrimitives(StaticAnalysis):
         # Check if the request was successful
         if response.status_code == 200:
             response_json = response.json()
+            logger.info(response_json)
             issues = response_json.get("hotspots", [])
             filtered_hotspots = [hotspot for hotspot in issues if hotspot.get("ruleKey") in rule_keys]
             logger.info(filtered_hotspots)

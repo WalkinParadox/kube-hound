@@ -55,10 +55,10 @@ class SuspiciousCryptographicNames(StaticAnalysis):
                             # for python files analysis is working well
                             self.python_analysis(type_file, AES, IV, RSA, not_suspicious, output_results)
                         if type_file.is_file() and type_file.suffix==".java":
-                            # for python files analysis is working well
+                            # for java files analysis is working well
                             self.java_analysis(type_file, AES, IV, RSA, not_suspicious, output_results)
                         if type_file.is_file() and type_file.suffix==".js":
-                            # for python files analysis is working well
+                            # for js files analysis is working well
                             self.js_analysis(type_file, AES, IV, RSA, not_suspicious, output_results)
                         else:
                             try:
@@ -144,6 +144,7 @@ class SuspiciousCryptographicNames(StaticAnalysis):
             # Create java ast tree and filter save node names only for function declarations and varaiable decations
             tree = javalang.parse.parse(file_content)
             for path, node in tree.filter(javalang.tree.MethodDeclaration):
+                logger.info(node)
                 if node.name not in tokens :
                     tokens.append(node.name)
 
@@ -166,6 +167,7 @@ class SuspiciousCryptographicNames(StaticAnalysis):
         self.find_issue(type_file, suspicious_names, not_suspicious, warning_lines, output_results)
 
     def js_analysis(self, type_file, AES, IV, RSA, not_suspicious, output_results):
+        logger.info("js analysis")
         # ANALYSIS BASED ON ABSTRACT TREE CREATION OF JAVASCRIPT FILE
         with (open(type_file, 'r') as file):
             # Read the content of the file
@@ -183,6 +185,7 @@ class SuspiciousCryptographicNames(StaticAnalysis):
             if parsed_code is not None:
                 for node in parsed_code.body:
                     if node.type in ('FunctionDeclaration'):
+                        logger.info(node)
                         # Extract function names from FunctionDeclaration nodes
                         fun_var_names.append(node.id.name)
                         if warning_lines.get(node.id.name) is not None:
@@ -191,6 +194,7 @@ class SuspiciousCryptographicNames(StaticAnalysis):
                             warning_lines[node.id.name] = [node.id.loc.start.line]
 
                     elif node.type in ('VariableDeclaration', 'VariableDeclarationStatement'):
+                        logger.info(node)
                         # Extract variable names from VariableDeclaration nodes
                         for declaration in node.declarations:
                             if declaration.id.type == 'Identifier':
